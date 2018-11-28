@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+   "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+   "http://struts.apache.org/dtds/struts-2.5.dtd">
+ 
+<struts>
+
+  <!-- Change action path extension from .action to .html -->
+  <constant name="struts.action.extension" value="html"/>
+  
+  <!-- https://struts.apache.org/docs/wildcard-method-selection.html -->
+  <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+  
+  <!-- Select simple theme of Struts  -->
+  <constant name="struts.ui.theme" value="simple" />
+  
+  <!-- Global properties file -->
+  <constant name="struts.custom.i18n.resources" value="global" />
+  
+  <!-- Actions -->
+  <package name="shop" namespace="/" extends="struts-default">
+    <!-- Interceptors -->
+    <interceptors>
+      <interceptor name="loginInterceptor" class="com.yuen.interceptor.LoginInterceptor" />
+      <interceptor-stack name="loginStack">
+        <interceptor-ref name="loginInterceptor" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+    </interceptors>
+    
+    <!-- Index page -->
+    <action name="index" class="com.yuen.action.IndexAction">
+      <result>/WEB-INF/pages/index.jsp</result>
+    </action>
+    
+    <!-- Category page -->
+    <action name="category" class="com.yuen.action.CategoryAction">
+      <!-- Exception thrown when get category ID on URL -->
+      <exception-mapping exception="java.lang.Exception" result="error" />
+      <result name="success">/WEB-INF/pages/category.jsp</result>
+      <result name="error">/WEB-INF/pages/404.jsp</result>
+    </action>
+    
+    <!-- Product page -->
+    <action name="product" class="com.yuen.action.ProductAction">
+      <!-- Exception thrown when get product ID on URL -->
+      <exception-mapping exception="java.lang.Exception" result="error" />
+      <result name="success">/WEB-INF/pages/product.jsp</result>
+      <result name="error">/WEB-INF/pages/404.jsp</result>
+    </action>
+    
+    <!-- Search page -->
+    <action name="search" class="com.yuen.action.SearchAction">
+      <result name="success">/WEB-INF/pages/search.jsp</result>
+    </action>
+    
+    <!-- Login pages -->
+    <action name="login" class="com.yuen.action.LoginAction" method="input">
+      <result name="input">/WEB-INF/pages/login.jsp</result>
+    </action>
+    
+    <action name="processLogin" class="com.yuen.action.LoginAction">
+      <result name="success" type="redirectAction">index</result>
+      <result name="input">/WEB-INF/pages/login.jsp</result>
+    </action>
+    
+    <!-- Register pages -->
+    <action name="register" class="com.yuen.action.RegisterAction" method="input">
+      <result name="input">/WEB-INF/pages/register.jsp</result>
+    </action>
+    
+    <action name="processRegister" class="com.yuen.action.RegisterAction">
+      <result name="success" type="redirectAction">index</result>
+      <result name="input">/WEB-INF/pages/register.jsp</result>
+    </action>
+    
+    <!-- Logout page -->
+    <action name="logout" class="com.yuen.action.LogoutAction">
+      <result name="success" type="redirectAction">index</result>
+    </action>
+    
+    <!-- Cart pages -->
+    <action name="viewCart" class="com.yuen.action.CartAction" method="view">
+      <result name="success">/WEB-INF/pages/cart.jsp</result>
+      <result name="empty" type="redirectAction">index</result>
+    </action>
+    
+    <action name="*Cart" class="com.yuen.action.CartAction" method="{1}">
+      <!-- Exception thrown when get category ID on URL -->
+      <exception-mapping exception="java.lang.Exception" result="error" />
+      <result name="success" type="redirectAction">viewCart</result>
+      <result name="error">/WEB-INF/pages/404.jsp</result>
+      <allowed-methods>add, update, remove</allowed-methods>
+    </action>
+    
+    <!-- Checkout pages -->
+    <action name="checkout" class="com.yuen.action.CheckoutAction" method="input">
+      <interceptor-ref name="loginStack" />
+      <result name="login" type="redirectAction">login</result>
+      <result name="input">/WEB-INF/pages/checkout.jsp</result>
+    </action>
+    
+    <action name="processCheckout" class="com.yuen.action.CheckoutAction">
+      <result name="success" type="redirectAction">index</result>
+      <result name="error" type="redirectAction">index</result>
+      <result name="input">/WEB-INF/pages/checkout.jsp</result>
+    </action>
+    
+  </package>
+  
+</struts>
